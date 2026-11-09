@@ -1,6 +1,6 @@
 {
   "name": "virtual-visit-desktop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Virtual Visit as a desktop app: Chromium with the Street View Gamepad extension preinstalled",
   "type": "module",
