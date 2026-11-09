@@ -1,0 +1,6 @@
+[submodule "street-view-gamepad"]
+	path = street-view-gamepad
+	url = https://github.com/beyerl/street-view-gamepad.git
+[submodule "virtual-visit"]
+	path = virtual-visit
+	url = https://github.com/beyerl/virtual-visit.git

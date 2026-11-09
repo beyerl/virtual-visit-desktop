@@ -1,0 +1,20 @@
+{
+  "name": "virtual-visit-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Virtual Visit as a desktop app: Chromium with the Street View Gamepad extension preinstalled",
+  "type": "module",
+  "bin": { "virtual-visit": "src/main.js" },
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "start": "node src/main.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "package": "node scripts/package.js"
+  },
+  "devDependencies": {
+    "@puppeteer/browsers": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
