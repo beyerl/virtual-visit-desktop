@@ -1,0 +1,41 @@
+# Builds the Linux x64 package (Chromium, Node, the extension and the game in
+# one tar.gz). Every push to main and every pull request gets it as a workflow
+# artifact; a version tag (v1.2.3) also publishes it as a GitHub release.
+
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run setup
+      - run: npm run package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: virtual-visit-desktop-linux-x64
+          path: dist/*.tar.gz
+          compression-level: 0
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.tar.gz --title "$GITHUB_REF_NAME" --generate-notes

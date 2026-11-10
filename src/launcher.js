@@ -51,6 +51,16 @@ export function chromiumArgs({ extension, profile, url, windowed = false, extra 
   ];
 }
 
+/**
+ * Chromium's environment. Chromium builds come without Google API keys and
+ * would say so in a bar across the top of the window; "no" turns that off.
+ * The game, the extension and Google Maps don't need the keys.
+ * @param {NodeJS.ProcessEnv} [env]
+ */
+export function chromiumEnv(env = process.env) {
+  return { GOOGLE_API_KEY: "no", GOOGLE_DEFAULT_CLIENT_ID: "no", GOOGLE_DEFAULT_CLIENT_SECRET: "no", ...env };
+}
+
 /** The file a URL path means under root, or null if it may not be served. @param {string} root @param {string} urlPath */
 export function resolveFile(root, urlPath) {
   let decoded;

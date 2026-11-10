@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromiumArgs, createGameServer, HOST, listen, PORT, profileDir } from "./launcher.js";
+import { chromiumArgs, chromiumEnv, createGameServer, HOST, listen, PORT, profileDir } from "./launcher.js";
 
 const APP = process.env.VIRTUAL_VISIT_APP ?? path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "app");
 const manifest = path.join(APP, "app.json");
@@ -34,7 +34,7 @@ const chromium = spawn(
     windowed: own.includes("--windowed"),
     extra,
   }),
-  { stdio: "inherit" },
+  { stdio: "inherit", env: chromiumEnv() },
 );
 chromium.on("error", (e) => {
   console.error(`Could not start Chromium: ${e.message}`);

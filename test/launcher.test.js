@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { chromiumArgs, createGameServer, listen, profileDir, resolveFile } from "../src/launcher.js";
+import { chromiumArgs, chromiumEnv, createGameServer, listen, profileDir, resolveFile } from "../src/launcher.js";
 
 test("chromium is started as a fullscreen app window with the extension and sound", () => {
   const args = chromiumArgs({ extension: "/e", profile: "/p", url: "http://127.0.0.1:1/" });
@@ -13,6 +13,15 @@ test("chromium is started as a fullscreen app window with the extension and soun
   const windowed = chromiumArgs({ extension: "/e", profile: "/p", url: "u", windowed: true, extra: ["--x"] });
   assert.equal(windowed.includes("--start-fullscreen"), false);
   assert.equal(windowed.at(-1), "--x");
+});
+
+test("chromium doesn't ask for Google API keys, unless some are set", () => {
+  const env = chromiumEnv({ PATH: "/bin" });
+  assert.equal(env.GOOGLE_API_KEY, "no");
+  assert.equal(env.GOOGLE_DEFAULT_CLIENT_ID, "no");
+  assert.equal(env.GOOGLE_DEFAULT_CLIENT_SECRET, "no");
+  assert.equal(env.PATH, "/bin");
+  assert.equal(chromiumEnv({ GOOGLE_API_KEY: "k" }).GOOGLE_API_KEY, "k");
 });
 
 test("the profile follows XDG_DATA_HOME", () => {

@@ -12,7 +12,7 @@ Needs Node 22+, `unzip` and git.
 git clone --recursive https://github.com/beyerl/virtual-visit-desktop.git
 cd virtual-visit-desktop
 npm ci
-npm run setup   # downloads Chrome for Testing, unpacks the extension, copies the game into app/
+npm run setup   # downloads Chromium, unpacks the extension, copies the game into app/
 npm start       # add -- --windowed for a normal window
 ```
 
@@ -23,14 +23,26 @@ The first visit to Google Maps may show Google's cookie consent page, once.
 
 ## A package to hand around
 
-`npm run package` makes `dist/virtual-visit-desktop-<version>-linux-x64.tar.gz` (about 270 MB) with
-its own Chromium and Node. Unpack it anywhere and run `./virtual-visit`.
+`npm run package` makes `dist/virtual-visit-desktop-<version>-linux-x64.tar.gz` with its own
+Chromium and Node. Unpack it anywhere and run `./virtual-visit`.
+
+GitHub Actions builds this package for every push and pull request (download it from the run's
+artifacts). Pushing a version tag also publishes it as a release:
+
+```sh
+git tag v0.1.3 && git push origin v0.1.3
+```
 
 ## How it works
 
-- **Chrome for Testing**, not Chrome: Chrome-branded builds no longer accept `--load-extension`.
-  Electron lacks extension APIs that the extension needs (`offscreen`, `declarativeNetRequest`,
-  `bookmarks`, `downloads`).
+- **Chromium**, not Chrome: Chrome-branded builds no longer accept `--load-extension`. Electron
+  lacks extension APIs that the extension needs (`offscreen`, `declarativeNetRequest`, `bookmarks`,
+  `downloads`). Chromium has no stable channel, only snapshots of single commits, so setup takes
+  the snapshot from where current stable Chrome was branched off: the same milestone as Chrome, but
+  without the fixes merged into Chrome's release branch later. `VIRTUAL_VISIT_CHROMIUM=latest` (or
+  a revision number) picks another snapshot. The Linux binary is stripped of its debug symbols.
+- **No Google API keys**: Chromium would show a bar saying they're missing; the app sets them to
+  `no`, which turns the bar off. Nothing in the app needs them.
 - **A local web server** on `127.0.0.1:47813` serves the game, since ES modules don't load from
   `file://`. The port is fixed because saves and settings belong to the origin. The extension's
   content script already runs on `127.0.0.1`.
@@ -43,7 +55,7 @@ its own Chromium and Node. Unpack it anywhere and run `./virtual-visit`.
 
 ## Updating
 
-Chrome for Testing doesn't update itself. Run `npm run setup` now and then for its security updates.
+Chromium doesn't update itself. Run `npm run setup` now and then to move to the current milestone.
 To take newer versions of the game and the extension:
 
 ```sh
